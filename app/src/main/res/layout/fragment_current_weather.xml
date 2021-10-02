@@ -3,13 +3,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".UI.CurrentWeatherFragment">
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_temperature"
+        android:textSize="24sp"
+        />
+    <TextView
         android:id="@+id/temperature"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="52sp"
+        tools:text="52"
         android:contentDescription="@string/current_weather_temperature" />
+    <Button
+        android:id="@+id/forcastBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:contentDescription="@string/five_day_forecast_button"
+        android:text="@string/five_day_temperatures"/>
 
 </LinearLayout>

@@ -9,15 +9,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
+import com.example.weatherapp.Util.LocationUtil
 import com.example.weatherapp.ViewModel.CurrentWeatherViewModel
 import com.example.weatherapp.ViewModel.CurrentWeatherViewModelFactory
 import com.example.weatherapp.databinding.FragmentCurrentWeatherBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.launch
 
 class CurrentWeatherFragment : Fragment() {
 
@@ -25,7 +29,8 @@ class CurrentWeatherFragment : Fragment() {
     private var _binding: FragmentCurrentWeatherBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val TAG = "CurrentWeatherFragment"
+
 
     private lateinit var viewModel : CurrentWeatherViewModel
     private lateinit var viewModelFactory: CurrentWeatherViewModelFactory
@@ -48,14 +53,26 @@ class CurrentWeatherFragment : Fragment() {
 
         displayLocation()
 
-
+        binding.forcastBtn.setOnClickListener {
+            findNavController().navigate(R.id.forecastFragment)
+        }
 
 
     }
 
     private fun displayLocation() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+/*        val currentLocation = LocationUtil.getCurrentLocation(requireContext(), requireActivity())
 
+        currentLocation?.let { location ->
+            lifecycleScope.launchWhenCreated {
+                val currentWeather = viewModel.getCurrentWeather(location)
+                if (currentWeather.isSuccessful) {
+                    binding.temperature.text = currentWeather.body()!!.current.temp.toString()
+                }
+            }
+        }*/
+
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -69,21 +86,12 @@ class CurrentWeatherFragment : Fragment() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
                 location?.let {
-                    lifecycleScope.launchWhenCreated {
-                        val currentWeather = viewModel.getCurrentWeather(location)
-                        if (currentWeather.isSuccessful) {
-                            binding.temperature.text = currentWeather.body()!!.main.temp.toString()
-                        }
-                    }
-
+                lifecycleScope.launch {
+                    val currentWeather = viewModel.getCurrentWeather(location)
+                        binding.temperature.text = currentWeather.main!!.temp.toString()
                 }
+                    }
             }
-    }
-
-    fun getCurrentWeather() {
-        lifecycleScope.launchWhenCreated {
-
-        }
     }
 
     override fun onDestroy() {
