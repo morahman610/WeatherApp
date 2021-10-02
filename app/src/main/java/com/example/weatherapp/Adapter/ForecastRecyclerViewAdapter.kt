@@ -15,16 +15,10 @@ class ForecastRecyclerViewAdapter(private val context: Context,
     private val forecastList: List<Forecast>
 ) : RecyclerView.Adapter<ForecastRecyclerViewAdapter.ForecastViewHolder>() {
 
-    init {
-        Log.d("ForecastRecyclerView", "recyclerview being init")
-    }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder {
         val binding = FiveDayForecastItemBinding.inflate(LayoutInflater.from(parent.context),
             parent, false)
-
-        Log.d("ForecastRecyclerView", "onCreateViewHolderbeing called")
 
         return ForecastViewHolder(binding)
     }
@@ -50,7 +44,6 @@ class ForecastRecyclerViewAdapter(private val context: Context,
     }
 
     override fun getItemCount(): Int {
-        Log.d("ForecastRecyclerView", "item count : ${forecastList.size}")
         return forecastList.size
     }
 

@@ -9,16 +9,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherapp.Adapter.ForecastRecyclerViewAdapter
 import com.example.weatherapp.Data.Forecast.Forecast
-import com.example.weatherapp.R
-import com.example.weatherapp.Util.LocationUtil
-import com.example.weatherapp.ViewModel.CurrentWeatherViewModel
-import com.example.weatherapp.ViewModel.CurrentWeatherViewModelFactory
 import com.example.weatherapp.ViewModel.ForecastViewModel
 import com.example.weatherapp.ViewModel.ForecastViewModelFactory
 import com.example.weatherapp.databinding.FragmentForecastBinding
@@ -54,9 +51,13 @@ class ForecastFragment : Fragment() {
         viewModelFactory = ForecastViewModelFactory()
         viewModel = ViewModelProvider(requireActivity(), viewModelFactory).get(ForecastViewModel::class.java)
 
+        checkLocation()
+    }
 
 
-
+    /*This function checks for location permissions and then initializes the recyclerview. A network calling
+    * function in the viewmodel is also called to retrieve five day forecast data*/
+    private fun checkLocation() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
         if (ActivityCompat.checkSelfPermission(
@@ -72,10 +73,17 @@ class ForecastFragment : Fragment() {
             .addOnSuccessListener { location : Location? ->
                 location?.let {
                     lifecycleScope.launch {
-                        viewModel.getForecast(location).forcastList?.let {
-                            forecastList.addAll(it)
-                            initRecyclerViewAdapter()
+                        try {
+                            viewModel.getForecast(location).forcastList?.let {
+                                forecastList.addAll(it)
+                                initRecyclerViewAdapter()
+                            }
+                        } catch (e : Exception) {
+                            val toast = Toast.makeText(requireContext(),
+                                "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT)
+                            toast.show()
                         }
+
                     }
                 }
 

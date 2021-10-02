@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
-import com.example.weatherapp.Util.LocationUtil
 import com.example.weatherapp.ViewModel.CurrentWeatherViewModel
 import com.example.weatherapp.ViewModel.CurrentWeatherViewModelFactory
 import com.example.weatherapp.databinding.FragmentCurrentWeatherBinding
@@ -60,17 +58,9 @@ class CurrentWeatherFragment : Fragment() {
 
     }
 
+    /*This function checks for location permission. If permission is granted, than a function in
+    * viewmodel is called to retrieve data for current weatehr*/
     private fun displayLocation() {
-/*        val currentLocation = LocationUtil.getCurrentLocation(requireContext(), requireActivity())
-
-        currentLocation?.let { location ->
-            lifecycleScope.launchWhenCreated {
-                val currentWeather = viewModel.getCurrentWeather(location)
-                if (currentWeather.isSuccessful) {
-                    binding.temperature.text = currentWeather.body()!!.current.temp.toString()
-                }
-            }
-        }*/
 
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
@@ -88,9 +78,15 @@ class CurrentWeatherFragment : Fragment() {
                 location?.let {
                 lifecycleScope.launch {
                     val currentWeather = viewModel.getCurrentWeather(location)
-                        binding.temperature.text = currentWeather.main!!.temp.toString()
-                }
+                        if (currentWeather.isSuccessful) {
+                            binding.temperature.text = currentWeather.body()!!.main!!.temp.toString()
+                        } else {
+                            val toast = Toast.makeText(requireContext(),
+                                currentWeather.errorBody().toString(), Toast.LENGTH_SHORT)
+                            toast.show()
+                        }
                     }
+                }
             }
     }
 

@@ -9,6 +9,7 @@ import com.example.weatherapp.Network.WeatherServiceProvider
 
 class ForecastViewModel : ViewModel() {
 
+    /*This function is to make a network call that retrieves five day forecast from the API*/
     suspend fun getForecast(location: Location) : ForecastResponse {
 
         val lat = location.latitude
